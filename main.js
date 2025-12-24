@@ -1,45 +1,30 @@
 import { getPlanetData } from './services/planet.js';
 import { calculateWeightOnPlanet } from './services/calculator.js';
 
-async function initApp() {
-    const btn = document.getElementById('calcBtn');
-    const planetInput = document.getElementById('planetInput');
-    const weightInput = document.getElementById('weightInput');
-    const resultArea = document.getElementById('result');
+document.getElementById('calcBtn').addEventListener('click', async () => {
+    const pInput = document.getElementById('planetInput').value;
+    const wInput = document.getElementById('weightInput').value;
+    const resultDiv = document.getElementById('result');
 
-    btn.addEventListener('click', async () => {
-        try {
-            // Temizleme ve yükleme durumu
-            resultArea.innerHTML = "<p style='color: #4facfe'>Uzaydan veriler alınıyor...</p>";
-            
-            const planetName = planetInput.value.trim();
-            const userWeight = parseFloat(weightInput.value);
+    try {
+        resultDiv.innerHTML = "Veriler hesaplanıyor...";
+        
+        // 1. Veriyi çek
+        const planet = await getPlanetData(pInput);
+        
+        // 2. Hesaplamayı yap
+        const finalWeight = calculateWeightOnPlanet(wInput, planet.gravity);
 
-            if (!planetName || !userWeight) {
-                throw new Error("Lütfen gezegen adı ve kilonuzu girin.");
-            }
+        // 3. Ekrana Yazdır
+        resultDiv.innerHTML = `
+            <div style="color: #00f2fe; padding: 10px; border: 1px solid #4facfe; margin-top: 10px;">
+                <strong>Gezegen:</strong> ${planet.name} <br>
+                <strong>Yerçekimi:</strong> ${planet.gravity} m/s² <br>
+                <strong>Oradaki Ağırlığınız:</strong> ${finalWeight} kg
+            </div>
+        `;
 
-            // 1. API SERVİSİ: Gezegen verisini çek
-            const planet = await getPlanetData(planetName);
-            console.log("Gelen Gezegen Verisi:", planet);
-
-            // 2. HESAPLAMA SERVİSİ: Ağırlığı hesapla
-            const finalWeight = calculateWeightOnPlanet(userWeight, planet.gravity);
-
-            // Sonucu ekrana bas
-            resultArea.innerHTML = `
-                <div class="result-card">
-                    <strong>Gezegen:</strong> ${planet.name} <br>
-                    <strong>Yerçekimi:</strong> ${planet.gravity} m/s² <br>
-                    <strong>Yeni Ağırlığınız:</strong> ${finalWeight} kg
-                </div>
-            `;
-
-        } catch (error) {
-            console.error("Hata Yakalandı:", error);
-            resultArea.innerHTML = `<p style="color: #ff4d4d;">⚠️ Hata: ${error.message}</p>`;
-        }
-    });
-}
-
-initApp();
+    } catch (error) {
+        resultDiv.innerHTML = `<span style="color: red;">⚠️ ${error.message}</span>`;
+    }
+});
