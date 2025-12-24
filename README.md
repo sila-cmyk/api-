@@ -1,1 +1,1 @@
-uzay api
+UZAY
