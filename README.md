@@ -1,1 +1,1 @@
-UZAY
+uzay
