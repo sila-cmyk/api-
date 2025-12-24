@@ -9,23 +9,35 @@ async function initApp() {
 
     btn.addEventListener('click', async () => {
         try {
-            resultArea.innerHTML = "Kozmik veriler çekiliyor...";
+            // Temizleme ve yükleme durumu
+            resultArea.innerHTML = "<p style='color: #4facfe'>Uzaydan veriler alınıyor...</p>";
             
-            // 1. API Çağrısı: Gezegen verilerini al
-            const planet = await getPlanetData(planetInput.value);
-            
-            // 2. Mantıksal Bağlantı: Gezegenden gelen gravity ile ağırlık hesapla
-            const finalWeight = calculateWeightOnPlanet(weightInput.value, planet.gravity);
+            const planetName = planetInput.value.trim();
+            const userWeight = parseFloat(weightInput.value);
 
+            if (!planetName || !userWeight) {
+                throw new Error("Lütfen gezegen adı ve kilonuzu girin.");
+            }
+
+            // 1. API SERVİSİ: Gezegen verisini çek
+            const planet = await getPlanetData(planetName);
+            console.log("Gelen Gezegen Verisi:", planet);
+
+            // 2. HESAPLAMA SERVİSİ: Ağırlığı hesapla
+            const finalWeight = calculateWeightOnPlanet(userWeight, planet.gravity);
+
+            // Sonucu ekrana bas
             resultArea.innerHTML = `
-                <div style="border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
+                <div class="result-card">
                     <strong>Gezegen:</strong> ${planet.name} <br>
                     <strong>Yerçekimi:</strong> ${planet.gravity} m/s² <br>
-                    <strong>Oradaki Ağırlığınız:</strong> ${finalWeight} kg
+                    <strong>Yeni Ağırlığınız:</strong> ${finalWeight} kg
                 </div>
             `;
+
         } catch (error) {
-            resultArea.innerHTML = "Hata: " + error.message;
+            console.error("Hata Yakalandı:", error);
+            resultArea.innerHTML = `<p style="color: #ff4d4d;">⚠️ Hata: ${error.message}</p>`;
         }
     });
 }
