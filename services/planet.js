@@ -1,12 +1,18 @@
 export async function getPlanetData(planetName) {
-    // Güneş sistemi verileri sağlayan ücretsiz bir API
-    const response = await fetch(`https://api.le-systeme-solaire.net/rest/bodies/${planetName.toLowerCase()}`);
-    if (!response.ok) throw new Error('Gezegen bulunamadı');
+    // Boşlukları temizle ve küçük harfe çevir
+    const cleanName = planetName.trim().toLowerCase();
+    
+    // Güneş sistemi API'si genellikle İngilizce isimleri kabul eder
+    const response = await fetch(`https://api.le-systeme-solaire.net/rest/bodies/${cleanName}`);
+    
+    if (!response.ok) {
+        throw new Error(`'${planetName}' gezegeni sistemde kayıtlı değil.`);
+    }
+    
     const data = await response.json();
     
     return {
-        name: data.englishName,
-        gravity: data.gravity, // m/s² cinsinden
-        mass: data.mass.massValue // Kütle değeri
+        name: data.englishName || data.name,
+        gravity: data.gravity
     };
 }
