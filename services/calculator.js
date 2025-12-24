@@ -1,6 +1,7 @@
 export function calculateWeightOnPlanet(userWeight, planetGravity) {
-    // Dünyadaki kütleyi bul (G=9.8) ve yeni gezegen çekimiyle çarp
+    // Dünya yerçekimi sabiti: 9.8
     const worldGravity = 9.8;
-    const result = (userWeight / worldGravity) * planetGravity;
-    return result.toFixed(2); // Virgülden sonra 2 basamak
+    // Formül: (Kütle / Dünyadaki Çekim) * Gezegendeki Çekim
+    const result = (parseFloat(userWeight) / worldGravity) * planetGravity;
+    return result.toFixed(2);
 }
